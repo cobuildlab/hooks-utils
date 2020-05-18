@@ -44,7 +44,7 @@ function usePromise(promise: Promise<any>, params: UsePromiseParams) {
       .catch((error) => {
         // check if the hook if mounted before update the state
         if (mounted.current)
-          setState((state) => ({ ...state, loading: true, error }));
+          setState((state) => ({ ...state, loading: false, error }));
       });
   }, [promise, params]);
 
