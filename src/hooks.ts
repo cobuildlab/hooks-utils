@@ -6,9 +6,14 @@ export type UsePromiseParams = {
 };
 /**
  * React Hook to manage promises.
+ * This hook receives a promise to be resolved and then reduced as a staful value.
+ * May receives a reducer fucntion to map the result to a more proper data structure.
+ *
  * @param {Promise} promise - The promise to be resolved.
- * @param {initialValue} initialValue -  An initial value to be hold until the promise is resolved.
- * @returns {Array<initialValue,boolean,{error:object,replay:Function}>} - And array which first value is the current    state, second is the loading state, a the third is an object with a error value and relay callback
+ * @param {object} params - Param options.
+ * @param {any} params.initialValue -  An initial value to be hold until the promise is resolved.
+ * @param {Function} params.reducer -  A reducer to map the resolved data.
+ * @returns {Array<any,boolean,{error:object,replay:Function}>} - And array which first value is the current state, second is the loading state, a the third is an object with a error value and replay callback.
  */
 function usePromise(promise: Promise<any>, params: UsePromiseParams) {
   const [{ value, loading, error }, setState] = useState({
@@ -41,7 +46,7 @@ function usePromise(promise: Promise<any>, params: UsePromiseParams) {
         if (mounted.current)
           setState((state) => ({ ...state, loading: true, error }));
       });
-  }, [promise, params, params.reducer]);
+  }, [promise, params]);
 
   useEffect(() => {
     replay();
