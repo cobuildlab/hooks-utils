@@ -18,10 +18,11 @@ import { usePromise } from '@cobuildlab/hooks-utils';
 
 ## API Docs
 
-| Object                                  | Description                                       |
-| --------------------------------------- | ------------------------------------------------- |
-| [`UsePromiseParams`](#UsePromiseParams) | Params for the `usePromise`.                      |
-| [`usePromise`](#usePromise)             | A hook for resolve promises in a declarative way. |
+| Object                                          | Description                                                |
+|-------------------------------------------------|------------------------------------------------------------|
+| [`UsePromiseParams`](#UsePromiseParams)         | Params for the `usePromise`.                               |
+| [`usePromise`](#usepromisepromise-initialvalue) | A hook for resolve promises in a declarative way.          |
+| [`useOnMount`](#useonmounteffectcallback)       | Shorthand for `useEffect` with an empty dependencies array |
 
 ### `UsePromiseParams`
 
@@ -57,8 +58,43 @@ const AgencyView = ()=> {
 }
 ```
 
+### `useOnMount(effectCallback)`
+
+Shorthand for useEffect with an empty dependencies array.
+It basically executes the function once on mount and unmount.
+
+[`Example`](#Examples)
+
+```javascript
+import React from "react";
+import { useOnMount } from "@cobuildlab/hooks-utils";
+import { useHistory } from 'react-router-dom';
+
+const Session = ()=> {
+  const history = useHistory();
+
+  useOnMount(() => {
+    if (!isNotAuthenticated) {
+      history.push(LOGIN_PAGE_ROUTE);
+    } else {
+      fetchData(); // Do something
+    }
+  });
+
+  return (
+    <React.Fragment>
+      {children}
+    </React.Fragment>
+  );
+}
+```
+
 ## Changelog
 
-### v0.1.0:
+### v0.1.2
+
+- `useOnMount`hook
+
+### v0.1.0
 
 - `usePromise` hook
