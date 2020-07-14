@@ -1,61 +1,89 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-export type UsePromiseParams = {
-  initialValue?: any;
-  reducer?: Function;
-};
+export interface UsePromiseOptions<T> {
+  onComplete?: (result: T) => void;
+  onError?: (error: any) => void;
+  lazy?: boolean;
+  called: boolean;
+}
+export interface UsePromiseRef<T> extends UsePromiseOptions<T> {
+  promise: () => Promise<T>;
+  mounted: boolean;
+}
+export interface UsePromiseState<T> {
+  loading: boolean;
+  result: T | null;
+  error: any | null;
+}
+export interface UsePromiseReturn<T> extends UsePromiseState<T> {
+  call: () => Promise<T | any | null | undefined>;
+}
+
 /**
- * React Hook to manage promises.
- * This hook receives a promise to be resolved and then reduced as a stateful value.
- * May receives a reducer function to map the result to a more proper data structure.
- *
- * @param {Promise} promise - The promise to be resolved.
- * @param {object} params - Param options.
- * @param {any} params.initialValue -  An initial value to be hold until the promise is resolved.
- * @param {Function} params.reducer -  A reducer to map the resolved data.
- * @returns {Array<any,boolean,{error:object,replay:Function}>} - And array which first value is the current state, second is the loading state, a the third is an object with a error value and replay callback.
+ * @param {Function} promise - A funtion that returns the promise to handle.
+ * @param {object} options - Options to set the hook.
+ * @returns {object} Hook state.
  */
-function usePromise(promise: Promise<any>, params: UsePromiseParams) {
-  const [{ value, loading, error }, setState] = useState({
-    value: params.initialValue,
-    loading: true,
+function usePromise<T>(
+  promise: () => Promise<T>,
+  options?: UsePromiseOptions<T>,
+): UsePromiseReturn<T> {
+  const [{ loading, result, error }, setState] = useState<UsePromiseState<T>>({
+    loading: false,
+    result: null,
     error: null,
   });
 
-  // Define a mutable state to know if the hook is mounted
-  // this is to avoid update the state when the hook is unmounting or unmounted
-  // This could happened if the hook is unmounted before the promise has been resolved
-  const mounted = useRef(true);
+  const ref = useRef<UsePromiseRef<T>>({
+    promise,
+    ...options,
+    mounted: true,
+    called: false,
+  });
 
-  const replay = useCallback(() => {
+  const call = useCallback(async () => {
     setState((state) => ({ ...state, loading: true }));
 
-    promise
-      .then((result) => {
-        const newState = { loading: false, value: null };
+    ref.current.called = true;
 
-        if (params.reducer !== null && params.reducer !== undefined)
-          newState.value = params.reducer(result);
-        else newState.value = result;
+    try {
+      const response = await ref.current.promise();
+      const { onComplete, mounted } = ref.current;
 
-        // check if the hook if mounted before update the state
-        if (mounted.current) setState((state) => ({ ...state, ...newState }));
-      })
-      .catch((error) => {
-        // check if the hook if mounted before update the state
-        if (mounted.current)
-          setState((state) => ({ ...state, loading: false, error }));
-      });
-  }, [promise, params]);
+      if (mounted) {
+        if (onComplete) onComplete(response);
+        setState((state) => ({ ...state, loading: false, result: response }));
+      }
+
+      return response;
+    } catch (error) {
+      const { onError, mounted } = ref.current;
+
+      if (mounted) {
+        if (onError) onError(error);
+        setState((state) => ({ ...state, loading: false, error: error }));
+      }
+
+      return error;
+    }
+  }, []);
 
   useEffect(() => {
-    replay();
-    return () => {
-      mounted.current = false;
+    ref.current = {
+      ...ref.current,
+      promise,
+      ...options,
     };
-  }, [replay]);
 
-  return [value, loading, { error, replay }];
+    if (options?.lazy && !ref.current.called) {
+      call();
+    }
+    return () => {
+      ref.current.mounted = false;
+    };
+  });
+
+  return { loading, result, error, call };
 }
 
 /**
