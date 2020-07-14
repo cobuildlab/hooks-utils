@@ -3,7 +3,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 export interface UsePromiseOptions<T> {
   onComplete?: (result: T) => void;
   onError?: (error: any) => void;
-  lazy?: boolean;
   called: boolean;
 }
 export interface UsePromiseRef<T> extends UsePromiseOptions<T> {
@@ -75,9 +74,6 @@ function usePromise<T>(
       ...options,
     };
 
-    if (options?.lazy && !ref.current.called) {
-      call();
-    }
     return () => {
       ref.current.mounted = false;
     };
