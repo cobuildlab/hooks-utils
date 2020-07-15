@@ -19,7 +19,7 @@ import { usePromise } from '@cobuildlab/hooks-utils';
 ## API Docs
 
 | Object                                          | Description                                                |
-|-------------------------------------------------|------------------------------------------------------------|
+| ----------------------------------------------- | ---------------------------------------------------------- |
 | [`UsePromiseParams`](#UsePromiseParams)         | Params for the `usePromise`.                               |
 | [`usePromise`](#usepromisepromise-initialvalue) | A hook for resolve promises in a declarative way.          |
 | [`useOnMount`](#useonmounteffectcallback)       | Shorthand for `useEffect` with an empty dependencies array |
@@ -44,14 +44,21 @@ import { fetchAgencies, fetchRoles } from "./agency-actions.js"
 
 const AgencyView = ()=> {
   // NOTE: be aware that we using the same names for almost all keys returned by the hook
-  // This id just for keep simple the example simplest as posible
-  const [data, loading, { error, replay: refetchAgencies() }] = usePromise(fetchAgencies);
-  const [data, loading, { error, replay }] = usePromise(fetchRoles, {initialValue:[], reducer: rolesData => rolesData.data});
+  // This id just for keep the example simplest as posible
+  const {data, loading,  error, call: fetchAgencies() } = usePromise(fetchAgencies);
+  const {data, loading, error, call: fetchRoles() } = usePromise(()=>fetchRoles(agency), {
+    onComplete: (response)=>{
+      console.log(response) // Roles response
+    },
+    onError: (error)=>{
+      console.log(error) // Handle Error
+    },
+  });
 
-  const submit = useCallback(() => {
+  const fetchData = useCallback(() => {
     // Do something
-    replay();
-    refetchAgencies();
+    fetchRoles();
+    fetchAgencies();
   });
 
   return ();
@@ -66,11 +73,11 @@ It basically executes the function once on mount and unmount.
 [`Example`](#Examples)
 
 ```javascript
-import React from "react";
-import { useOnMount } from "@cobuildlab/hooks-utils";
+import React from 'react';
+import { useOnMount } from '@cobuildlab/hooks-utils';
 import { useHistory } from 'react-router-dom';
 
-const Session = ()=> {
+const Session = () => {
   const history = useHistory();
 
   useOnMount(() => {
@@ -81,12 +88,8 @@ const Session = ()=> {
     }
   });
 
-  return (
-    <React.Fragment>
-      {children}
-    </React.Fragment>
-  );
-}
+  return <React.Fragment>{children}</React.Fragment>;
+};
 ```
 
 ## Changelog
