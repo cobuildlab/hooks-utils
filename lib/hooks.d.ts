@@ -1,5 +1,5 @@
 export interface UsePromiseOptions<T, U> {
-    onComplete?: (result: T) => void;
+    onCompleted?: (result: T) => void;
     onError?: (error: U) => void;
     skip?: boolean;
 }

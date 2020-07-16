@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 export interface UsePromiseOptions<T, U> {
-  onComplete?: (result: T) => void;
+  onCompleted?: (result: T) => void;
   onError?: (error: U) => void;
   skip?: boolean;
 }
@@ -48,10 +48,10 @@ function usePromise<T, U>(
 
     try {
       const response = await ref.current.promise();
-      const { onComplete, mounted } = ref.current;
+      const { onCompleted, mounted } = ref.current;
 
       if (mounted) {
-        if (onComplete) onComplete(response);
+        if (onCompleted) onCompleted(response);
         setState((state) => ({ ...state, loading: false, result: response }));
       }
 
