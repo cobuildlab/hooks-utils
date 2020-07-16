@@ -1,49 +1,50 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-export interface UsePromiseOptions<T> {
+export interface UsePromiseOptions<T, U> {
   onComplete?: (result: T) => void;
-  onError?: (error: any) => void;
-  called: boolean;
+  onError?: (error: U) => void;
+  skip?: boolean;
 }
-export interface UsePromiseRef<T> extends UsePromiseOptions<T> {
-  promise: () => Promise<T>;
+export interface UsePromiseRef<T, U> extends UsePromiseOptions<T, U> {
+  promise: () => Promise<T> | Promise<T>;
   mounted: boolean;
 }
-export interface UsePromiseState<T> {
+export interface UsePromiseState<T, U> {
   loading: boolean;
   result: T | null;
-  error: any | null;
+  error: U | null;
 }
-export interface UsePromiseReturn<T> extends UsePromiseState<T> {
+export interface UsePromiseReturn<T, U> extends UsePromiseState<T, U> {
   call: () => Promise<T | any | null | undefined>;
 }
 
 /**
  * @param {Function} promise - A funtion that returns the promise to handle.
  * @param {object} options - Options to set the hook.
+ * @param {Array} dependencies - Dependencies to re-run the promise automatically.
  * @returns {object} Hook state.
  */
-function usePromise<T>(
+function usePromise<T, U>(
   promise: () => Promise<T>,
-  options?: UsePromiseOptions<T>,
-): UsePromiseReturn<T> {
-  const [{ loading, result, error }, setState] = useState<UsePromiseState<T>>({
+  options?: UsePromiseOptions<T, U>,
+  dependencies: Array<unknown> = [],
+): UsePromiseReturn<T, U> {
+  const [{ loading, result, error }, setState] = useState<
+    UsePromiseState<T, U>
+  >({
     loading: false,
     result: null,
     error: null,
   });
 
-  const ref = useRef<UsePromiseRef<T>>({
+  const ref = useRef<UsePromiseRef<T, U>>({
     promise,
     ...options,
     mounted: true,
-    called: false,
   });
 
   const call = useCallback(async () => {
     setState((state) => ({ ...state, loading: true }));
-
-    ref.current.called = true;
 
     try {
       const response = await ref.current.promise();
@@ -67,17 +68,23 @@ function usePromise<T>(
     }
   }, []);
 
+  ref.current = {
+    ...ref.current,
+    promise,
+    ...options,
+  };
+
+  const shouldCall = options?.skip ? false : true;
+
   useEffect(() => {
-    ref.current = {
-      ...ref.current,
-      promise,
-      ...options,
-    };
+    if (shouldCall) call();
 
     return () => {
       ref.current.mounted = false;
     };
-  });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [call, shouldCall, ...dependencies]);
 
   return { loading, result, error, call };
 }
