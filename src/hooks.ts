@@ -2,8 +2,10 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 export interface UsePromiseOptions<T, U> {
   onCompleted?: (result: T) => void;
-  onError?: (error: U) => void;
+  onError?: (error: any) => void;
+  reducer?: (state: T) => U;
   skip?: boolean;
+  initialState?: U;
 }
 export interface UsePromiseRef<T, U> extends UsePromiseOptions<T, U> {
   promise: () => Promise<T> | Promise<T>;
@@ -11,8 +13,8 @@ export interface UsePromiseRef<T, U> extends UsePromiseOptions<T, U> {
 }
 export interface UsePromiseState<T, U> {
   loading: boolean;
-  result: T | null;
-  error: U | null;
+  result: T | U | undefined;
+  error: any | null;
 }
 export interface UsePromiseReturn<T, U> extends UsePromiseState<T, U> {
   call: () => Promise<T | any | null | undefined>;
@@ -33,7 +35,7 @@ function usePromise<T, U>(
     UsePromiseState<T, U>
   >({
     loading: false,
-    result: null,
+    result: options?.initialState,
     error: null,
   });
 
@@ -48,11 +50,14 @@ function usePromise<T, U>(
 
     try {
       const response = await ref.current.promise();
-      const { onCompleted, mounted } = ref.current;
+      const { onCompleted, mounted, reducer } = ref.current;
 
       if (mounted) {
         if (onCompleted) onCompleted(response);
-        setState((state) => ({ ...state, loading: false, result: response }));
+
+        const newState = reducer ? reducer(response) : response;
+        
+        setState((state) => ({ ...state, loading: false, result: newState }));
       }
 
       return response;

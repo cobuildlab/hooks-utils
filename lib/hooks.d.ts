@@ -1,7 +1,9 @@
 export interface UsePromiseOptions<T, U> {
     onCompleted?: (result: T) => void;
-    onError?: (error: U) => void;
+    onError?: (error: any) => void;
+    reducer?: (state: T) => U;
     skip?: boolean;
+    initialState?: U;
 }
 export interface UsePromiseRef<T, U> extends UsePromiseOptions<T, U> {
     promise: () => Promise<T> | Promise<T>;
@@ -9,8 +11,8 @@ export interface UsePromiseRef<T, U> extends UsePromiseOptions<T, U> {
 }
 export interface UsePromiseState<T, U> {
     loading: boolean;
-    result: T | null;
-    error: U | null;
+    result: T | U | undefined;
+    error: any | null;
 }
 export interface UsePromiseReturn<T, U> extends UsePromiseState<T, U> {
     call: () => Promise<T | any | null | undefined>;
