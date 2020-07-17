@@ -16,9 +16,10 @@ export interface UsePromiseState<T, U> {
   result: T | U | undefined;
   error: any | null;
 }
-export interface UsePromiseReturn<T, U> extends UsePromiseState<T, U> {
-  call: () => Promise<T | any | null | undefined>;
-}
+export interface UsePromiseReturn<T, U>
+  extends Array<
+    boolean | T | U | { error: any; call: () => Promise<any> } | undefined
+  > {}
 
 /**
  * @param {Function} promise - A funtion that returns the promise to handle.
@@ -56,7 +57,7 @@ function usePromise<T, U>(
         if (onCompleted) onCompleted(response);
 
         const newState = reducer ? reducer(response) : response;
-        
+
         setState((state) => ({ ...state, loading: false, result: newState }));
       }
 
@@ -91,7 +92,7 @@ function usePromise<T, U>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [call, shouldCall, ...dependencies]);
 
-  return { loading, result, error, call };
+  return [result, loading, { error, call }];
 }
 
 /**
