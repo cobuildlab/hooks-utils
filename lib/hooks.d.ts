@@ -1,6 +1,9 @@
+export declare type UsePromiseResult<T, U> = T | U | unknown;
+export declare type UsePromiseCall<T> = Promise<T | Error>;
+export declare type UsePromiseError = Error | null;
 export interface UsePromiseOptions<T, U> {
     onCompleted?: (result: T) => void;
-    onError?: (error: any) => void;
+    onError?: (error: Error) => void;
     reducer?: (state: T) => U;
     skip?: boolean;
     initialState?: U;
@@ -11,15 +14,15 @@ export interface UsePromiseRef<T, U> extends UsePromiseOptions<T, U> {
 }
 export interface UsePromiseState<T, U> {
     loading: boolean;
-    result: T | U | undefined;
-    error: any | null;
+    result: UsePromiseResult<T, U>;
+    error: UsePromiseError;
 }
 export interface UsePromiseReturn<T, U> {
-    0: T | U | undefined;
+    0: UsePromiseResult<T, U>;
     1: boolean;
     2: {
-        error: any;
-        call: () => Promise<T | any>;
+        error: UsePromiseError;
+        call: () => UsePromiseCall<T>;
     };
 }
 /**

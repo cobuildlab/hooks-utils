@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
+export type UsePromiseResult<T, U> = T | U | unknown;
+export type UsePromiseCall<T> = Promise<T | Error>;
+export type UsePromiseError = Error | null;
 export interface UsePromiseOptions<T, U> {
   onCompleted?: (result: T) => void;
-  onError?: (error: any) => void;
+  onError?: (error: Error) => void;
   reducer?: (state: T) => U;
   skip?: boolean;
   initialState?: U;
@@ -13,13 +16,13 @@ export interface UsePromiseRef<T, U> extends UsePromiseOptions<T, U> {
 }
 export interface UsePromiseState<T, U> {
   loading: boolean;
-  result: T | U | undefined;
-  error: any | null;
+  result: UsePromiseResult<T, U>;
+  error: UsePromiseError;
 }
 export interface UsePromiseReturn<T, U> {
-  0: T | U | undefined;
+  0: UsePromiseResult<T, U>;
   1: boolean;
-  2: { error: any; call: () => Promise<T | any> };
+  2: { error: UsePromiseError; call: () => UsePromiseCall<T> };
 }
 /**
  * @param {Function} promise - A funtion that returns the promise to handle.
@@ -46,7 +49,7 @@ function usePromise<T, U>(
     mounted: true,
   });
 
-  const call = useCallback(async () => {
+  const call = useCallback(async (): UsePromiseCall<T> => {
     setState((state) => ({ ...state, loading: true }));
 
     try {
