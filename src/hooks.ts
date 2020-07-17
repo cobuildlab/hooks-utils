@@ -8,7 +8,7 @@ export interface UsePromiseOptions<T, U> {
   initialState?: U;
 }
 export interface UsePromiseRef<T, U> extends UsePromiseOptions<T, U> {
-  promise: () => Promise<T> | Promise<T>;
+  promise: () => Promise<T>;
   mounted: boolean;
 }
 export interface UsePromiseState<T, U> {
