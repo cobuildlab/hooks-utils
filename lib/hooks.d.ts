@@ -14,10 +14,13 @@ export interface UsePromiseState<T, U> {
     result: T | U | undefined;
     error: any | null;
 }
-export interface UsePromiseReturn<T, U> extends Array<boolean | T | U | {
-    error: any;
-    call: () => Promise<any>;
-} | undefined> {
+export interface UsePromiseReturn<T, U> {
+    0: T | U | undefined;
+    1: boolean;
+    2: {
+        error: any;
+        call: () => Promise<T | any>;
+    };
 }
 /**
  * @param {Function} promise - A funtion that returns the promise to handle.
