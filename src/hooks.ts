@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-export type UsePromiseResult<T, U> = T | U | unknown;
+export type UsePromiseResult<T> = T | unknown;
 export type UsePromiseCall<T> = Promise<T | Error>;
 export type UsePromiseError = Error | null;
 export interface UsePromiseOptions<T, U> {
@@ -16,11 +16,11 @@ export interface UsePromiseRef<T, U> extends UsePromiseOptions<T, U> {
 }
 export interface UsePromiseState<T, U> {
   loading: boolean;
-  result: UsePromiseResult<T, U>;
+  result: UsePromiseResult<T | U>;
   error: UsePromiseError;
 }
-export interface UsePromiseReturn<T, U> {
-  0: UsePromiseResult<T, U>;
+export interface UsePromiseReturn<T> {
+  0: UsePromiseResult<T>;
   1: boolean;
   2: { error: UsePromiseError; call: () => UsePromiseCall<T> };
 }
@@ -34,7 +34,7 @@ function usePromise<T, U>(
   promise: () => Promise<T>,
   options?: UsePromiseOptions<T, U>,
   dependencies: Array<unknown> = [],
-): UsePromiseReturn<T, U> {
+): UsePromiseReturn<T | U> {
   const [{ loading, result, error }, setState] = useState<
     UsePromiseState<T, U>
   >({

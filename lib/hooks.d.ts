@@ -1,4 +1,4 @@
-export declare type UsePromiseResult<T, U> = T | U | unknown;
+export declare type UsePromiseResult<T> = T | unknown;
 export declare type UsePromiseCall<T> = Promise<T | Error>;
 export declare type UsePromiseError = Error | null;
 export interface UsePromiseOptions<T, U> {
@@ -14,11 +14,11 @@ export interface UsePromiseRef<T, U> extends UsePromiseOptions<T, U> {
 }
 export interface UsePromiseState<T, U> {
     loading: boolean;
-    result: UsePromiseResult<T, U>;
+    result: UsePromiseResult<T | U>;
     error: UsePromiseError;
 }
-export interface UsePromiseReturn<T, U> {
-    0: UsePromiseResult<T, U>;
+export interface UsePromiseReturn<T> {
+    0: UsePromiseResult<T>;
     1: boolean;
     2: {
         error: UsePromiseError;
@@ -31,7 +31,7 @@ export interface UsePromiseReturn<T, U> {
  * @param {Array} dependencies - Dependencies to re-run the promise automatically.
  * @returns {object} Hook state.
  */
-declare function usePromise<T, U>(promise: () => Promise<T>, options?: UsePromiseOptions<T, U>, dependencies?: Array<unknown>): UsePromiseReturn<T, U>;
+declare function usePromise<T, U>(promise: () => Promise<T>, options?: UsePromiseOptions<T, U>, dependencies?: Array<unknown>): UsePromiseReturn<T | U>;
 /**
  * Shorthand for useEffect with an empty dependencies array.
  * It basically executes the function once on mount and unmount.
