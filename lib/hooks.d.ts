@@ -12,9 +12,9 @@ export interface UsePromiseRef<T, U> extends UsePromiseOptions<T, U> {
     promise: () => Promise<T>;
     mounted: boolean;
 }
-export interface UsePromiseState<T, U> {
+export interface UsePromiseState<T> {
     loading: boolean;
-    result: UsePromiseResult<T | U>;
+    result: UsePromiseResult<T>;
     error: UsePromiseError;
 }
 export interface UsePromiseReturn<T> {

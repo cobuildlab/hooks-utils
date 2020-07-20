@@ -14,9 +14,9 @@ export interface UsePromiseRef<T, U> extends UsePromiseOptions<T, U> {
   promise: () => Promise<T>;
   mounted: boolean;
 }
-export interface UsePromiseState<T, U> {
+export interface UsePromiseState<T> {
   loading: boolean;
-  result: UsePromiseResult<T | U>;
+  result: UsePromiseResult<T>;
   error: UsePromiseError;
 }
 export interface UsePromiseReturn<T> {
@@ -36,7 +36,7 @@ function usePromise<T, U>(
   dependencies: Array<unknown> = [],
 ): UsePromiseReturn<T | U> {
   const [{ loading, result, error }, setState] = useState<
-    UsePromiseState<T, U>
+    UsePromiseState<T | U>
   >({
     loading: false,
     result: options?.initialState,
