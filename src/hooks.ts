@@ -92,6 +92,8 @@ function usePromise<T, U>(
   const shouldCall = options?.skip ? false : true;
 
   useEffect(() => {
+    ref.current.mounted = true;
+
     if (shouldCall) call();
 
     return () => {
