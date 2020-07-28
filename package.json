@@ -38,10 +38,16 @@
     "jest": "^26.0.1",
     "lint-staged": "^10.2.2",
     "prettier": "^2.0.5",
+    "react-test-renderer": "^16.9.0",
     "ts-jest": "^25.5.1",
     "typescript": "^3.8.3"
   },
-  "dependencies": {},
+  "dependencies": {
+    "react": "^16.9.0"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
