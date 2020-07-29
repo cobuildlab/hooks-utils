@@ -60,22 +60,21 @@ function usePromise<T, U>(
 
     try {
       const response = await ref.current.promise();
-      const { onCompleted, mounted, reducer } = ref.current;
 
-      if (mounted) {
-        if (onCompleted) onCompleted(response);
+      if (ref.current.mounted) {
+        if (ref.current.onCompleted) ref.current.onCompleted(response);
 
-        const newState = reducer ? reducer(response) : response;
+        const newState = ref.current.reducer
+          ? ref.current.reducer(response)
+          : response;
 
         setState((state) => ({ ...state, loading: false, result: newState }));
       }
 
       return response;
     } catch (error) {
-      const { onError, mounted } = ref.current;
-
-      if (mounted) {
-        if (onError) onError(error);
+      if (ref.current.mounted) {
+        if (ref.current.onError) ref.current.onError(error);
         setState((state) => ({ ...state, loading: false, error: error }));
       }
 
@@ -92,6 +91,8 @@ function usePromise<T, U>(
   const shouldCall = options?.skip ? false : true;
 
   useEffect(() => {
+    ref.current.mounted = true;
+
     if (shouldCall) call();
 
     return () => {

@@ -43,11 +43,11 @@ import { usePromise } from "@cobuildlab/hooks-utils";
 import { fetchAgencies, fetchRoles } from "./agency-actions.js"
 
 const AgencyView = ()=> {
-  // NOTE: be aware that we using the same names for almost all keys returned by the hook
-  // This id just for keep the example simplest as posible
-  const {data, loading,  error, call: fetchAgencies() } = usePromise(fetchAgencies);
-  const {data, loading, error, call: fetchRoles() } = usePromise(()=>fetchRoles(agency), {
-    onComplete: (response)=>{
+  // NOTE: be aware that we using the same names for the error keys returned by the hook
+  // This is just for keep the example simplest as posible
+  const [agencies, loadingAgencies,  {error, call: fetchAgencies()} ] = usePromise(fetchAgencies);
+  const [roles, loadingRoles, {error, call: fetchRoles()} ] = usePromise(()=>fetchRoles(agency), {
+    onCmplete: (response)=>{
       console.log(response) // Roles response
     },
     onError: (error)=>{
