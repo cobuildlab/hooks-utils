@@ -18,11 +18,12 @@ import { usePromise } from '@cobuildlab/hooks-utils';
 
 ## API Docs
 
-| Object                                          | Description                                                |
-| ----------------------------------------------- | ---------------------------------------------------------- |
-| [`UsePromiseParams`](#UsePromiseParams)         | Params for the `usePromise`.                               |
-| [`usePromise`](#usepromisepromise-initialvalue) | A hook for resolve promises in a declarative way.          |
-| [`useOnMount`](#useonmounteffectcallback)       | Shorthand for `useEffect` with an empty dependencies array |
+| Object                                           | Description                                                |
+| ------------------------------------------------ | ---------------------------------------------------------- |
+| [`UsePromiseParams`](#UsePromiseParams)          | Params for the `usePromise`.                               |
+| [`usePromise`](#usepromisepromise-initialvalue)  | A hook for resolve promises in a declarative way.          |
+| [`useOnMount`](#useonmounteffectcallback)        | Shorthand for `useEffect` with an empty dependencies array |
+| [`useOnClickOutside`](#useOnMounteffectCallback) | Subscribe call to be called when a click is fired outside  |
 
 ### `UsePromiseParams`
 
@@ -92,7 +93,57 @@ const Session = () => {
 };
 ```
 
+### `useOnClickOutside(callback,innerRef)`
+
+Hook that subscribe a function to be call when a click is made out side the component on wich the ref is passed down.
+
+```javascript
+import React, { useState, useRef } from 'react';
+import { useOnClickOutside } from '@cobuildlab/hooks-utils';
+
+const Dropdown = ({ children }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const closeDropdown = () => setIsOpen(false);
+  const openDropdown = () => setIsOpen(true);
+
+  // close dropdown when a click is fired outside itself
+  const ref = useOnClickOutside(() => {
+    closeDropdown();
+  });
+  // pass the ref returned by the hook to the component
+  return isOpen && <div ref={ref}>{children}</div>;
+};
+```
+
+If you already are using a ref inside your component yo could pass it to the hook so the hook use that instead of returning a ref
+
+```javascript
+import React, { useState, useRef } from 'react';
+import { useOnClickOutside } from '@cobuildlab/hooks-utils';
+
+const Dropdown = ({ children }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const closeDropdown = () => setIsOpen(false);
+  const openDropdown = () => setIsOpen(true);
+  const ref = useRef();
+
+  // Do somthing with the ref...
+
+  // close dropdown when a click is fired outside itself
+  useOnClickOutside(() => {
+    closeDropdown();
+  }, ref); // passing the ref to the hook
+
+  // pass the same ref to the component
+  return isOpen && <div ref={ref}>{children}</div>;
+};
+```
+
 ## Changelog
+
+### v0.1.5
+
+- `useOnClickOutside`hook
 
 ### v0.1.2
 

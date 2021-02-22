@@ -1,4 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  MutableRefObject,
+} from 'react';
 
 export type UsePromiseCall<T> = Promise<T | Error>;
 export type UsePromiseError = Error | null;
@@ -24,8 +30,8 @@ export interface UsePromiseState<T> {
   error: UsePromiseError;
 }
 
-function usePromise<T>(promise: () => Promise<T>): UsePromiseReturn<T>;
-function usePromise<T, U>(
+export function usePromise<T>(promise: () => Promise<T>): UsePromiseReturn<T>;
+export function usePromise<T, U>(
   promise: () => Promise<T>,
   options?: UsePromiseOptions<T, U>,
   dependencies?: Array<unknown>,
@@ -36,7 +42,7 @@ function usePromise<T, U>(
  * @param {Array} dependencies - Dependencies to re-run the promise automatically.
  * @returns {object} Hook state.
  */
-function usePromise<T, U>(
+export function usePromise<T, U>(
   promise: () => Promise<T>,
   options?: UsePromiseOptions<T, U>,
   dependencies: Array<unknown> = [],
@@ -112,7 +118,56 @@ function usePromise<T, U>(
  * @param {Function} fn - React effect callback to run on mount and unmount.
  * @returns {void}
  */
-// eslint-disable-next-line react-hooks/exhaustive-deps
-const useOnMount = (fn: React.EffectCallback): void => useEffect(fn, []);
+export function useOnMount(fn: React.EffectCallback): void {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(fn, []);
+}
 
-export { usePromise, useOnMount };
+export function useOnClickOutside(
+  handler: (event: UIEvent) => void,
+): MutableRefObject<HTMLElement | undefined>;
+
+/**
+ * Hook that subscribe a function to be call when a click is made out side the component on wich the ref is passed down.
+ *
+ * @param {Function} handler - Callbanck function to call on outside click.
+ * @param {MutableRefObject} innerRef - Ref to bue used instead of create a new one.
+ * @returns {MutableRefObject} - Ref to be used on the react component which has to be check.
+ */
+export function useOnClickOutside(
+  handler: (event: UIEvent) => void,
+  innerRef?: MutableRefObject<HTMLElement>,
+): MutableRefObject<HTMLElement | undefined> {
+  const handlerRef = useRef(handler);
+  handlerRef.current = handler;
+  const internalRef = useRef<HTMLElement>();
+
+  const ref = innerRef || internalRef;
+  useEffect(() => {
+    const handlerCallBack = (event: UIEvent) => {
+      if (handlerRef.current) handlerRef.current(event);
+    };
+    const listener = (event: UIEvent) => {
+      // Do nothing if clicking ref's element or descendent elements
+      if (!ref.current || ref.current.contains(event.target as Node)) {
+        return;
+      }
+
+      handlerCallBack(event);
+    };
+
+    // eslint-disable-next-line no-undef
+    document.addEventListener('mousedown', listener);
+    // eslint-disable-next-line no-undef
+    document.addEventListener('touchstart', listener);
+
+    return () => {
+      // eslint-disable-next-line no-undef
+      document.removeEventListener('mousedown', listener);
+      // eslint-disable-next-line no-undef
+      document.removeEventListener('touchstart', listener);
+    };
+  }, [ref]);
+
+  return ref;
+}

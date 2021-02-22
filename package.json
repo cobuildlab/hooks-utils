@@ -1,9 +1,9 @@
 {
   "name": "@cobuildlab/hooks-utils",
-  "version": "0.1.4",
-  "description": "Simple and Lightweight state management for react applications. ",
-  "main": "lib/index.js",
-  "types": "./lib/index.d.ts",
+  "version": "0.1.5",
+  "description": "Hooks with to help with ract applications",
+  "main": "lib/hooks.js",
+  "types": "./lib/hooks.d.ts",
   "scripts": {
     "test": "jest --collect-coverage",
     "build": "tsc",
@@ -16,6 +16,7 @@
   },
   "author": "Angel Lacret",
   "license": "GPL-3.0",
+  "sideEffects": false,
   "devDependencies": {
     "@babel/core": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
