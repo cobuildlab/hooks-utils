@@ -1,6 +1,6 @@
 {
   "name": "@cobuildlab/hooks-utils",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Simple and Lightweight state management for react applications. ",
   "main": "lib/hooks.js",
   "types": "./lib/hooks.d.ts",
