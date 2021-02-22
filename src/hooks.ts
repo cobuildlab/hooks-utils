@@ -128,6 +128,8 @@ export function useOnClickOutside(
 ): MutableRefObject<HTMLElement | undefined>;
 
 /**
+ * Hook that subscribe a function to be call when a click is made out side the component on wich the ref is passed down.
+ *
  * @param {Function} handler - Callbanck function to call on outside click.
  * @param {MutableRefObject} innerRef - Ref to bue used instead of create a new one.
  * @returns {MutableRefObject} - Ref to be used on the react component which has to be check.
