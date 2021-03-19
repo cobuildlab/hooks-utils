@@ -23,7 +23,8 @@ import { usePromise } from '@cobuildlab/hooks-utils';
 | [`UsePromiseParams`](#UsePromiseParams)          | Params for the `usePromise`.                               |
 | [`usePromise`](#usepromisepromise-initialvalue)  | A hook for resolve promises in a declarative way.          |
 | [`useOnMount`](#useonmounteffectcallback)        | Shorthand for `useEffect` with an empty dependencies array |
-| [`useOnClickOutside`](#useOnMounteffectCallback) | Subscribe call to be called when a click is fired outside  |
+| [`useOnClickOutside`](#useOnMounteffectCallback) | Subscribe call to be called when a click is fired outside  | 
+[`usePrevious`](#useOnMounteffectCallback) | Get previous value of a state  |
 
 ### `UsePromiseParams`
 
@@ -139,7 +140,34 @@ const Dropdown = ({ children }) => {
 };
 ```
 
+### `usePrevious(currentState)`
+
+Hook that returns the previous value of a state variable.
+
+```javascript
+import React, { useState, useRef } from 'react';
+
+const CreateUser = ({ children }) => {
+  const [user, setUser] = useState({ username: '', password: '' });
+  const previousUser = usePrevious(user);
+
+  useEffect(() => {
+    // compare user with previousUser state here
+  }, [user, previousUser]);
+
+  const onChange = (value: string, key: string): void => {
+    setData({ ...user, [field]: value });
+  }
+
+  return <div onChange={onChange}>{children}</div>;
+};
+```
+
 ## Changelog
+
+### v0.1.6
+
+- `usePrevious`hook
 
 ### v0.1.5
 
