@@ -171,3 +171,21 @@ export function useOnClickOutside(
 
   return ref;
 }
+
+/**
+ * A type-safe version of the `usePrevious` hook described here.
+ *
+ * @see {@link https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state}.
+ *
+ * @param value - The state value.
+ * @returns The previous value.
+ */
+export function usePrevious<T>(
+  value: T,
+): MutableRefObject<T | undefined>['current'] {
+  const ref = useRef<T>();
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+}

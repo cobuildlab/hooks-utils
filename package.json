@@ -1,6 +1,6 @@
 {
   "name": "@cobuildlab/hooks-utils",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Hooks with to help with ract applications",
   "main": "lib/hooks.js",
   "types": "./lib/hooks.d.ts",
