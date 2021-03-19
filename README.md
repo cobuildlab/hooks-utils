@@ -165,6 +165,10 @@ const CreateUser = ({ children }) => {
 
 ## Changelog
 
+### v0.1.6
+
+- `usePrevious`hook
+
 ### v0.1.5
 
 - `useOnClickOutside`hook
